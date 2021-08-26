@@ -1,5 +1,8 @@
 # Docker-Ruby
 
+## Note: 
+You should add these files outside of your Ruby Repo. 
+
 ``` bash 
 # create image
 docker build -t ruby-post .
