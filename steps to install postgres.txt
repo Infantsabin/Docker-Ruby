@@ -1,0 +1,52 @@
+ref: https://luppeng.wordpress.com/2020/02/28/install-and-start-postgresql-on-alpine-linux/
+
+apk update
+apk add postgres
+
+adduser dbuser
+* this prompts for password
+
+su - dbuser
+
+mkdir -p ./postgresql/data
+chmod 700 ./postgresql/data
+
+* create data directories
+
+initdb -D ./postgresql/data
+
+* allow connections
+~ $ echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
+~ $ echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
+
+
+* Changing the UNIX Socket Directories Value
+
+$  vi /var/lib/postgresql/data/postgresql.conf
+```
+unix_socket_directories = '/tmp'
+```
+
+
+* Start the PostgreSQL Database Server
+
+~ $ pg_ctl start -D /var/lib/postgresql/data
+
+
+* Enable PostgreSQL Daemon to Auto Start After System Boot
+
+(Change back to root user)
+# touch /etc/local.d/postgres-custom.start
+# chmod +x /etc/local.d/postgres-custom.start
+# vi /etc/local.d/postgres-custom.start
+
+#!/bin/sh
+su postgres -c 'pg_ctl start -D /var/lib/postgresql/data'
+
+Save the script. Add the local service to the default runlevel, and reload the state:
+
+~ # rc-update add local default
+ * service local added to runlevel default
+~ # openrc
+ * Caching service dependencies ...         [ ok ]
+ * Starting local ...                       [ !! ]
